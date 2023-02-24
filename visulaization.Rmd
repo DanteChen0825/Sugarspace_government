@@ -1,0 +1,296 @@
+---
+title: "ABM_cw1_ZhiangC"
+output: pdf_document
+date: "2023-02-23"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library("readxl")
+model1_finance <- read_excel("~/Desktop/CASA/CASA0011/cw1/output/model1/model1_finance.xlsx")
+
+#a <- xtabs(mean~ redistribution +tax_rate, model1_finance)
+
+library(ggthemes)
+library("ggplot2")
+ggplot(model1_finance, aes(x=tax_rate , y=redistribution, fill= Possibility )) +
+  geom_tile(  alpha = 1,color = "white", lwd = 1.5, linetype = 1)  +
+  geom_text(aes(label = Possibility), color = "white", size = 2) + theme_ipsum()  + theme(plot.title = element_text(size=12), panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank())+
+  ggtitle("Fiscal sustainability possibilities for model 1") 
+```
+
+
+
+```{r}
+library("readxl")
+model1_survivial <- read_excel("~/Desktop/CASA/CASA0011/cw1/output/model1/model1_survivial.xlsx")
+```
+
+
+```{r}
+library(tidyverse)
+library(hrbrthemes)
+library(viridis)
+```
+
+
+```{r}
+model1_survivial$redistribution <-as.character(model1_survivial$redistribution)
+model1_survivial$sustainability <-as.character(model1_survivial$sustainability)
+
+
+ggplot(model1_survivial, aes(redistribution, survival_rate)) + geom_violin(aes(colour = sustainability ))+
+   geom_boxplot(width=0.05)+
+  
+
+#geom_jitter(color="blue", size=0.2, alpha=0.6) +
+  theme_ipsum() + 
+  theme(
+      plot.title = element_text(size=12)) +
+    ggtitle("Survival rate with different redistribution for model 1") +
+    xlab("redisribution")
+```
+
+```{r}
+model1_gini <- read_excel("~/Desktop/CASA/CASA0011/cw1/output/model1/model1_gini.xlsx")
+```
+
+```{r}
+df_reshaped <- data.frame(x = model1_gini$Index,                           
+                       y = c(model1_gini$a0_0, 
+                             model1_gini$a1_0.2,model1_gini$a2_0.2,model1_gini$a3_0.2,
+                             model1_gini$a1_0.4,model1_gini$a2_0.4,model1_gini$a3_0.4,
+                             model1_gini$a1_0.6,model1_gini$a2_0.6,model1_gini$a3_0.6,
+                             model1_gini$a1_0.8,model1_gini$a2_0.8,model1_gini$a3_0.8),
+                       group = c(rep("a0_0", nrow(model1_gini)),
+                                 rep("a1_0.2", nrow(model1_gini)),rep("a2_0.2", nrow(model1_gini)),rep("a3_0.2", nrow(model1_gini)),
+                                 rep("a1_0.4", nrow(model1_gini)),rep("a2_0.4", nrow(model1_gini)),rep("a3_0.4", nrow(model1_gini)),                                               rep("a1_0.6", nrow(model1_gini)),rep("a2_0.6", nrow(model1_gini)),rep("a3_0.6", nrow(model1_gini)),
+                                 rep("a1_0.8", nrow(model1_gini)),rep("a2_0.8", nrow(model1_gini)),rep("a3_0.8", nrow(model1_gini))))
+```
+
+
+
+```{r}
+df_reshaped$redistribution <- substr(df_reshaped$group, start = 2, stop = 2)
+df_reshaped$tax_rate <- substr(df_reshaped$group, start = 4, stop = 6)
+
+
+df_reshaped$redistribution[df_reshaped$redistribution == 0] <- 'Baseline'
+```
+
+
+```{r, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
+library(viridis)
+
+
+
+df_reshaped_2 <- df_reshaped %>% 
+  filter(tax_rate == c(0,0.2))
+
+ggplot(df_reshaped_2, aes(x=x, y=y,  color=redistribution)) +
+    geom_line() +
+    ylim(0, 1)+
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle("Gini index of tax rate of 0.2") +
+    theme_ipsum() + 
+    theme(plot.title = element_text(size=12)) +
+    ylab("Gini index") +
+    xlab("Time")
+    
+
+
+df_reshaped_4 <- df_reshaped %>% 
+  filter(tax_rate == c(0,0.4))
+
+ggplot(df_reshaped_4, aes(x=x, y=y,  color=redistribution)) +
+    geom_line() +
+    ylim(0, 1)+
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle("Gini index of tax rate of 0.4") +
+    theme_ipsum() +
+    theme(plot.title = element_text(size=12)) +
+    ylab("Gini index") +
+    xlab("Time")
+
+   
+
+
+df_reshaped_6 <- df_reshaped %>% 
+  filter(tax_rate == c(0,0.6))
+
+
+ggplot(df_reshaped_6, aes(x=x, y=y,  color=redistribution)) +
+    geom_line() +
+    ylim(0, 1)+
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle("Gini index of tax rate of 0.6") +
+    theme_ipsum() +
+  theme(plot.title = element_text(size=12)) +
+    ylab("Gini index") +
+    xlab("Time")
+
+
+df_reshaped_8 <- df_reshaped %>% 
+  filter(tax_rate == c(0,0.8))
+
+
+ggplot(df_reshaped_8, aes(x=x, y=y,  color=redistribution)) +
+    geom_line() +
+    ylim(0, 1)+
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle("Gini index of tax rate of 0.8") +
+    theme_ipsum() +
+  theme(plot.title = element_text(size=12)) +
+    ylab("Gini index") +
+    xlab("Time")
+
+#ggarrange(tax_2, tax_4, tax_6, tax_8,labels = c("A", "B", "C", "D"),ncol = 2, nrow = 2)
+```
+
+
+
+# model 2
+
+```{r}
+library("readxl")
+model2_finance <- read_excel("~/Desktop/CASA/CASA0011/cw1/output/model2/model2_finance.xlsx")
+
+#a <- xtabs(mean~ redistribution +tax_rate, model1_finance)
+
+library(ggthemes)
+library("ggplot2")
+ggplot(model2_finance, aes(x=tax_rate , y=redistribution, fill= Possibility )) +
+  geom_tile(  alpha = 1,color = "white", lwd = 1.5, linetype = 1)  +
+  geom_text(aes(label = Possibility), color = "white", size = 2) + theme_ipsum() + theme(plot.title = element_text(size=12), panel.border = element_blank(), panel.grid.major = element_blank(),
+panel.grid.minor = element_blank()) +
+  ggtitle("Fiscal sustainability possibilities for model 2")
+```
+
+
+```{r}
+model2_survivial <- read_excel("~/Desktop/CASA/CASA0011/cw1/output/model2/model2_survival.xlsx")
+
+model2_survivial$redistribution <-as.character(model2_survivial$redistribution)
+model2_survivial$sustainability <-as.character(model2_survivial$sustainability)
+
+
+ggplot(model2_survivial, aes(redistribution, survival_rate)) + geom_violin(aes(colour = sustainability ))+
+   geom_boxplot(width=0.05)+
+  
+
+#geom_jitter(color="blue", size=0.2, alpha=0.6) +
+  theme_ipsum() + 
+  theme(
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Survival rate with different redistribution for model 2") +
+    xlab("redisribution")
+```
+
+
+
+
+
+```{r}
+model2_gini <- read_excel("~/Desktop/CASA/CASA0011/cw1/output/model2/model2_gini.xlsx")
+```
+
+```{r}
+df_reshaped <- data.frame(x = model2_gini$Index,                           
+                       y = c(model2_gini$a0_0, 
+                             model2_gini$a1_0.2,model2_gini$a2_0.2,model2_gini$a3_0.2,
+                             model2_gini$a1_0.4,model2_gini$a2_0.4,model2_gini$a3_0.4,
+                             model2_gini$a1_0.6,model2_gini$a2_0.6,model2_gini$a3_0.6,
+                             model2_gini$a1_0.8,model2_gini$a2_0.8,model2_gini$a3_0.8),
+                       group = c(rep("a0_0", nrow(model2_gini)),
+                                 rep("a1_0.2", nrow(model2_gini)),rep("a2_0.2", nrow(model2_gini)),rep("a3_0.2", nrow(model2_gini)),
+                                 rep("a1_0.4", nrow(model2_gini)),rep("a2_0.4", nrow(model2_gini)),rep("a3_0.4", nrow(model2_gini)),                                               rep("a1_0.6", nrow(model2_gini)),rep("a2_0.6", nrow(model2_gini)),rep("a3_0.6", nrow(model2_gini)),
+                                 rep("a1_0.8", nrow(model2_gini)),rep("a2_0.8", nrow(model2_gini)),rep("a3_0.8", nrow(model2_gini))))
+```
+
+
+
+```{r}
+df_reshaped$redistribution <- substr(df_reshaped$group, start = 2, stop = 2)
+df_reshaped$tax_rate <- substr(df_reshaped$group, start = 4, stop = 6)
+
+
+df_reshaped$redistribution[df_reshaped$redistribution == 0] <- 'Baseline'
+```
+
+
+```{r, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
+library(viridis)
+
+
+
+df_reshaped_2 <- df_reshaped %>% 
+  filter(tax_rate == c(0,0.2))
+
+ggplot(df_reshaped_2, aes(x=x, y=y,  color=redistribution)) +
+    geom_line() +
+    ylim(0, 1)+
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle("Gini index of tax rate of 0.2") +
+    theme_ipsum() + 
+    theme(plot.title = element_text(size=12)) +
+    ylab("Gini index") +
+    xlab("Time")
+    
+
+
+df_reshaped_4 <- df_reshaped %>% 
+  filter(tax_rate == c(0,0.4))
+
+ggplot(df_reshaped_4, aes(x=x, y=y,  color=redistribution)) +
+    geom_line() +
+    ylim(0, 1)+
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle("Gini index of tax rate of 0.4") +
+    theme_ipsum() +
+    theme(plot.title = element_text(size=12)) +
+    ylab("Gini index") +
+    xlab("Time")
+
+   
+
+
+df_reshaped_6 <- df_reshaped %>% 
+  filter(tax_rate == c(0,0.6))
+
+
+ggplot(df_reshaped_6, aes(x=x, y=y,  color=redistribution)) +
+    geom_line() +
+    ylim(0, 1)+
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle("Gini index of tax rate of 0.6") +
+    theme_ipsum() +
+  theme(plot.title = element_text(size=12)) +
+    ylab("Gini index") +
+    xlab("Time")
+
+
+df_reshaped_8 <- df_reshaped %>% 
+  filter(tax_rate == c(0,0.8))
+
+
+ggplot(df_reshaped_8, aes(x=x, y=y,  color=redistribution)) +
+    geom_line() +
+    ylim(0, 1)+
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle("Gini index of tax rate of 0.8") +
+    theme_ipsum() +
+  theme(plot.title = element_text(size=12)) +
+    ylab("Gini index") +
+    xlab("Time")
+
+```
